@@ -258,6 +258,11 @@ function! evervim#markdownBufSetup() " {{{
     syn keyword evervimTagWord Tags contained
     hi link evervimTagBase Statement
     hi link evervimTagWord Type
+
+    syn match evervimNotebook '^Notebook:.*$' contains=evervimNotebookWord
+    syn keyword evervimNotebookWord Notebook contained
+    hi link evervimNotebook Statement
+    hi link evervimNotebookWord Type
 endfunction
 "}}}
 

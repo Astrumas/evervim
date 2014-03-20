@@ -57,6 +57,19 @@ class EvernoteAPI(object):
         return self.__getNoteStore().updateNote(authToken, note)
     #}}}
 
+    def editNotebook(self, note, localNotebookName):
+        """
+        return note editted notebook
+        """
+        remoteNotebookList = self.listNotebooks()  
+
+        for remoteNotebook in remoteNotebookList:
+            if localNotebookName == remoteNotebook.name:
+                note.notebookGuid = remoteNotebook.guid
+                
+        return note 
+
+
     def editTag(self, note, tags):  # {{{
         """
         return note editted tag.
@@ -90,6 +103,7 @@ class EvernoteAPI(object):
                                                      withResourcesRecognition=False,
                                                      withResourcesAlternateData=False)
         returnNote.tagNames = self.__getNoteStore().getNoteTagNames(authToken, note.guid)
+        returnNote.notebookName = self.__getNoteStore().getNotebook(authToken, note.notebookGuid).name
         return returnNote
     #}}}
 
