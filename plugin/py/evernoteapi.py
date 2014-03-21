@@ -9,6 +9,7 @@ import os
 sys.path.append(os.path.join(os.path.dirname(__file__), 'lib/'))
 import time
 from datetime import datetime, timedelta
+from dateutil import parser
 
 import thrift.protocol.TBinaryProtocol as TBinaryProtocol
 import thrift.transport.THttpClient as THttpClient
@@ -69,6 +70,22 @@ class EvernoteAPI(object):
                 
         return note 
 
+    def editReminder(self, note, reminderString):
+        note.attributes = Types.NoteAttributes()
+
+        if not reminderString:
+            if note.attributes.reminderTime:
+                del note.attributes.reminderTime
+            if note.attributes.reminderDoneTime:
+                del note.attributes.reminderDoneTime
+        elif reminderString == 'DONE':
+            doneTime = time.time() * 1000
+            note.attributes.reminderDoneTime = doneTime
+        else:
+            reminderTime = parser.parse(reminderString)
+            note.attributes.reminderTime = time.mktime(reminderTime.timetuple()) * 1000 + reminderTime.microsecond / 1000
+
+        return note
 
     def editTag(self, note, tags):  # {{{
         """

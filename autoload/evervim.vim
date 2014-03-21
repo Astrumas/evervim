@@ -184,6 +184,7 @@ function! evervim#createNoteBuf() " {{{
     call append(0, "")
     call append(1, "Tags:")
     call append(2, "Notebook:")
+    call append(2, "Reminder:")
     call cursor(1,0)
     setlocal nomodified
 
@@ -264,6 +265,11 @@ function! evervim#markdownBufSetup() " {{{
     syn keyword evervimNotebookWord Notebook contained
     hi link evervimNotebook Statement
     hi link evervimNotebookWord Type
+
+    syn match evervimReminder '^Reminder:.*$' contains=evervimReminderWord
+    syn keyword evervimReminderWord Reminder contained
+    hi link evervimReminder Statement
+    hi link evervimReminderWord Type
 endfunction
 "}}}
 

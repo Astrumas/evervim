@@ -6,6 +6,7 @@ import markdownAndENML
 import re
 from evernoteapi import EvernoteAPI
 from xml.dom import minidom
+import time
 
 
 class EvervimPref(object):
@@ -69,6 +70,14 @@ class EvervimEditor(object):
             bufStrings.append(note.title)
             bufStrings.append("Tags:" + ",".join(note.tagNames))
             bufStrings.append('Notebook:' + note.notebookName)
+
+            if note.attributes.reminderDoneTime:
+                reminderString = 'DONE'
+            elif note.attributes.reminderTime:
+                reminderTime = time.localtime(note.attributes.reminderTime/1000)
+                reminderString = time.strftime('%Y-%m-%d %H:%M:%S', reminderTime)
+
+            bufStrings.append('Reminder:' + reminderString)
             contentxml = ennote.toprettyxml(indent=pref.xmlindent, encoding='utf-8')
             contentxml = re.sub('^' + pref.xmlindent, '', contentxml, flags=re.MULTILINE)
             bufStrings.extend([line for line in contentxml.splitlines()[1:-1] if line.strip()])
@@ -76,6 +85,14 @@ class EvervimEditor(object):
             bufStrings.append('# ' + note.title)
             bufStrings.append("Tags:" + ",".join(note.tagNames))
             bufStrings.append('Notebook:' + note.notebookName)
+
+            if note.attributes.reminderDoneTime:
+                reminderString = 'DONE'
+            elif note.attributes.reminderTime:
+                reminderTime = time.localtime(note.attributes.reminderTime/1000)
+                reminderString = time.strftime('%Y-%m-%d %H:%M:%S', reminderTime)
+
+            bufStrings.append('Reminder:' + reminderString)
             content = markdownAndENML.parseENML(ennote).encode('utf-8')
             bufStrings.extend(content.splitlines())
         return bufStrings
@@ -87,12 +104,14 @@ class EvervimEditor(object):
             note.title = buflines[0]
             note = self.api.editTag(note, buflines[1].replace('Tags:', ''))
             note = self.api.editNotebook(note, buflines[2].replace('Notebook:', ''))
+            note = self.api.editReminder(note, buflines[3].replace('Reminder:', ''))
             note.content  = EvernoteAPI.NOTECONTENT_HEADER + "\n".join(buflines[3:]) + EvernoteAPI.NOTECONTENT_FOOTER
         else:
             note.title = re.sub(r'^#', '',buflines[0]).strip()
             note = self.api.editTag(note, buflines[1].replace('Tags:', ''))
             note = self.api.editNotebook(note, buflines[2].replace('Notebook:', ''))
-            parsedContent = markdownAndENML.parseMarkdown("\n".join(buflines[3:]))
+            note = self.api.editReminder(note, buflines[3].replace('Reminder:', ''))
+            parsedContent = markdownAndENML.parseMarkdown("\n".join(buflines[4:]))
             note.content  = EvernoteAPI.NOTECONTENT_HEADER + parsedContent.encode('utf-8') + EvernoteAPI.NOTECONTENT_FOOTER
 
         return note
