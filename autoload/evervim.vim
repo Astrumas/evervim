@@ -218,7 +218,13 @@ function! evervim#listBufSetup() " {{{
         exec bufnr.'wincmd w'
     else
         exec ':lcd ' . g:evervim_workdir
-        exec g:evervim_splitoption . "sp __EVERVIM_LIST__"
+
+        if g:evervim_nosplit == '1'
+            exec "e __EVERVIM_LIST__"
+        else
+            exec g:evervim_splitoption . "sp __EVERVIM_LIST__"
+        endif
+
         setlocal noshowcmd
         setlocal noswapfile
         setlocal buftype=nofile

@@ -53,6 +53,10 @@ if !exists('g:evervim_splitoption')
     let g:evervim_splitoption= 'v'
 endif
 
+if !exists('g:evervim_nosplit')
+    let g:evervim_nosplit= '0'
+endif
+
 ""}}}
 
 " ---------------------------------------------------------------------------
